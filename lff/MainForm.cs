@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using HtmlAgilityPack;
@@ -66,7 +65,7 @@ namespace lff
 
         private string PrepareTrackName(string[] info)
         {
-            return Regex.Unescape(string.Join(" ", info));
+            return WebUtility.HtmlDecode(string.Join(" ", info));
         }
 
     }
