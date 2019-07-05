@@ -3,75 +3,78 @@ using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 using HtmlAgilityPack;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace lff
 {
     public partial class MainForm : Form
     {
+        public static object locker = new object();
         public MainForm()
         {
             InitializeComponent();
             timer1.Start();
-            this.timer1.Interval = 10000;
 
-            MainLabel.Text = "Connecting...";
-            
+            WriteInfo("Connecting...");
 
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-
-            Thread th = new Thread(() =>
+            lock (locker)
             {
-                try
-                {
-
-                    HtmlWeb html = new HtmlWeb()
+                var th = new Thread(() =>
                     {
-                        PreRequest = request =>
+                        try
                         {
-                            // Make any changes to the request object that will be used.
-                            request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-                            return true;
+                            var html = new HtmlWeb()
+                            {
+                                PreRequest = request =>
+                                {
+                                    request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+                                    return true;
+                                }
+                            };
+                            var doc = html.Load(Constants.Path);
+                            var track = doc.DocumentNode.SelectSingleNode(@"//td[@class='chartlist-name']");
+                            var artist = doc.DocumentNode.SelectSingleNode(@"//td[@class='chartlist-artist']");
+
+                            WriteInfo(PrepareTrackName(new string[] { track.InnerText, artist.InnerText }));
+
+
                         }
-                    };
-                    HtmlDocument doc = html.Load(Constants.Path);
+                        catch (WebException we)
+                        {
+                            WriteInfo("Connection issues" + we.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteInfo(ex.Message+ex.Message);
+                        }
+                    })
+                { IsBackground = true };
 
-
-                    var items = doc.DocumentNode.SelectSingleNode("//td[@class='chartlist-name']//span");
-
-                    var info = items.InnerText.Split(new[] { " ", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (this.InvokeRequired)
-                        this.Invoke(new Action(() => { MainLabel.Text = PrepareTrackName(info); }));
-                    else MainLabel.Text = PrepareTrackName(info);
-
-                }
-                catch (WebException exce)
-                {
-                    MainLabel.Text = "Connection issues";
-                }
-                catch (Exception ec)
-                {
-                    MainLabel.Text = ec.Message;
-                }
-            })
-            { IsBackground = true };
-
-            th.Start();
+                th.Start();
+            }
         }
 
         private string PrepareTrackName(string[] info)
         {
-            return WebUtility.HtmlDecode(string.Join(" ", info));
+            string track = info[0].Trim();
+            string artist = info[1].Trim();
+            return $"{track} - {artist}";
         }
 
-    }
+        private void WriteInfo(string text)
+        {
+            if (MainLabel.InvokeRequired)
+            {
+                MainLabel.Invoke(new MethodInvoker(() => MainLabel.Text = text));
+            }
+            else
+            {
+                MainLabel.Text = text;
+            }
+        }
 
-    static class Constants
-    {
-        public static string Path = "http://last.fm/user/kypiwindy";
     }
 }
