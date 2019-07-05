@@ -38,7 +38,6 @@ namespace lff
 
                     WriteInfo(PrepareTrackName(new[] { track.InnerText, artist.InnerText }));
 
-
                 }
                 catch (WebException we)
                 {
@@ -53,8 +52,8 @@ namespace lff
 
         private string PrepareTrackName(string[] info)
         {
-            string track = info[0].Trim();
-            string artist = info[1].Trim();
+            string track = info[0]?.Trim();
+            string artist = info[1]?.Trim();
             return $"{track} - {artist}";
         }
 
