@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using HtmlAgilityPack;
 
@@ -8,7 +8,6 @@ namespace lff
 {
     public partial class MainForm : Form
     {
-        public static object locker = new object();
         public MainForm()
         {
             InitializeComponent();
@@ -18,43 +17,38 @@ namespace lff
 
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private async void timer1_Tick(object sender, EventArgs e)
         {
-            lock (locker)
+            await Task.Factory.StartNew(() =>
             {
-                var th = new Thread(() =>
+                try
+                {
+                    var html = new HtmlWeb()
                     {
-                        try
+                        PreRequest = request =>
                         {
-                            var html = new HtmlWeb()
-                            {
-                                PreRequest = request =>
-                                {
-                                    request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-                                    return true;
-                                }
-                            };
-                            var doc = html.Load(Constants.Path);
-                            var track = doc.DocumentNode.SelectSingleNode(@"//td[@class='chartlist-name']");
-                            var artist = doc.DocumentNode.SelectSingleNode(@"//td[@class='chartlist-artist']");
-
-                            WriteInfo(PrepareTrackName(new string[] { track.InnerText, artist.InnerText }));
-
-
+                            request.AutomaticDecompression =
+                                DecompressionMethods.Deflate | DecompressionMethods.GZip;
+                            return true;
                         }
-                        catch (WebException we)
-                        {
-                            WriteInfo("Connection issues" + we.Message);
-                        }
-                        catch (Exception ex)
-                        {
-                            WriteInfo(ex.Message+ex.Message);
-                        }
-                    })
-                { IsBackground = true };
+                    };
+                    var doc = html.Load(Constants.Path);
+                    var track = doc.DocumentNode.SelectSingleNode(@"//td[@class='chartlist-name']");
+                    var artist = doc.DocumentNode.SelectSingleNode(@"//td[@class='chartlist-artist']");
 
-                th.Start();
-            }
+                    WriteInfo(PrepareTrackName(new[] { track.InnerText, artist.InnerText }));
+
+
+                }
+                catch (WebException we)
+                {
+                    WriteInfo("Connection issues" + we.Message);
+                }
+                catch (Exception ex)
+                {
+                    WriteInfo(ex.Message + ex.Message);
+                }
+            });
         }
 
         private string PrepareTrackName(string[] info)
