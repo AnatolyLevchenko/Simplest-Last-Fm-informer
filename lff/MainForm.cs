@@ -54,7 +54,16 @@ namespace lff
         {
             var track = info[0]?.Trim();
             var artist = info[1]?.Trim();
-            return $"{track} - {artist}";
+            if (track != null)
+            {
+                track = WebUtility.HtmlDecode(track);
+
+            }
+            if (artist != null)
+            {
+                artist = WebUtility.HtmlDecode(artist);
+            }
+            return $"{artist} - {track}";
         }
 
         private void WriteInfo(string text)
