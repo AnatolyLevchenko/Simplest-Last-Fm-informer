@@ -43,17 +43,18 @@
             // MainLabel
             // 
             this.MainLabel.AutoSize = true;
-            this.MainLabel.Location = new System.Drawing.Point(14, 21);
+            this.MainLabel.Location = new System.Drawing.Point(12, 14);
             this.MainLabel.Name = "MainLabel";
             this.MainLabel.Size = new System.Drawing.Size(59, 13);
             this.MainLabel.TabIndex = 0;
             this.MainLabel.Text = "label text";
+            this.MainLabel.Click += new System.EventHandler(this.MainLabel_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(369, 51);
+            this.ClientSize = new System.Drawing.Size(369, 36);
             this.Controls.Add(this.MainLabel);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;

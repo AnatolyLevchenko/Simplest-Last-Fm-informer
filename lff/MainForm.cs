@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,6 +12,7 @@ namespace lff
         public MainForm()
         {
             InitializeComponent();
+            SetStartLocation();
             timer1.Start();
 
             WriteInfo("Connecting...");
@@ -47,6 +49,7 @@ namespace lff
                 {
                     WriteInfo(ex.Message + ex.Message);
                 }
+
             });
         }
 
@@ -68,15 +71,40 @@ namespace lff
 
         private void WriteInfo(string text)
         {
+            var tip = new ToolTip();
             if (MainLabel.InvokeRequired)
             {
-                MainLabel.Invoke(new MethodInvoker(() => MainLabel.Text = text));
+                MainLabel.Invoke(new MethodInvoker(() =>
+                {
+                    MainLabel.Text = text;
+                    tip.SetToolTip(MainLabel, MainLabel.Text);
+                }));
             }
             else
             {
                 MainLabel.Text = text;
+                tip.SetToolTip(MainLabel, MainLabel.Text);
             }
         }
 
+        private void SetStartLocation()
+        {
+            var workingArea = Screen.GetWorkingArea(this);
+            Location = new Point(workingArea.Right - Size.Width,
+                workingArea.Bottom - Size.Height);
+        }
+
+        private void MainLabel_Click(object sender, EventArgs e)
+        {
+            if (MainLabel.InvokeRequired)
+            {
+                MainLabel.Invoke(new MethodInvoker(() => Clipboard.SetText(MainLabel.Text)));
+              
+            }
+            else
+            {
+                Clipboard.SetText(MainLabel.Text);
+            }
+        }
     }
 }

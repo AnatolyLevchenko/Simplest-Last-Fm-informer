@@ -71,6 +71,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -89,6 +90,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="iconfinder_lastfm_410521.ico" />
+    <None Include="Resources\copy_paste_document_file_1557.png" />
+    <None Include="Resources\copy_paste_document_file_15571.png" />
     <Content Include="screenshot.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
