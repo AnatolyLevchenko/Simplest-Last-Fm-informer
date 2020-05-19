@@ -49,6 +49,8 @@
             this.MainLabel.TabIndex = 0;
             this.MainLabel.Text = "label text";
             this.MainLabel.Click += new System.EventHandler(this.MainLabel_Click);
+            this.MainLabel.MouseEnter += new System.EventHandler(this.MainLabel_MouseEnter);
+            this.MainLabel.MouseLeave += new System.EventHandler(this.MainLabel_MouseLeave);
             // 
             // MainForm
             // 

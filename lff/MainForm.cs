@@ -1,14 +1,18 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Drawing;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using HtmlAgilityPack;
 
 namespace lff
 {
     public partial class MainForm : Form
     {
+        private  string track;
+        private  string artist;
+        LyricsForm lyricsForm;
         public MainForm()
         {
             InitializeComponent();
@@ -55,8 +59,8 @@ namespace lff
 
         private string PrepareTrackName(string[] info)
         {
-            var track = info[0]?.Trim();
-            var artist = info[1]?.Trim();
+             track = info[0]?.Trim();
+             artist = info[1]?.Trim();
             if (track != null)
             {
                 track = WebUtility.HtmlDecode(track);
@@ -105,6 +109,20 @@ namespace lff
             {
                 Clipboard.SetText(MainLabel.Text);
             }
+        }
+
+        
+
+        private void MainLabel_MouseEnter(object sender, EventArgs e)
+        {
+            if (lyricsForm == null)
+                lyricsForm = new LyricsForm();
+            lyricsForm.Show(artist,track);
+        }
+
+        private void MainLabel_MouseLeave(object sender, EventArgs e)
+        {
+            lyricsForm.Hide();
         }
     }
 }
